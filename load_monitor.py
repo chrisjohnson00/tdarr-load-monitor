@@ -21,6 +21,7 @@ app = Flask(__name__)
 # Configuration from environment variables with defaults
 API_URL = os.getenv("API_URL", "http://192.168.1.131:8265")
 GET_NODES_URL = f"{API_URL}/api/v2/get-nodes"
+ALTER_WORKER_LIMIT_URL = f"{API_URL}/api/v2/alter-worker-limit"
 TARGET_NODE_NAME = os.getenv("TARGET_NODE_NAME", "r10-ubuntu")
 WORKER_TYPE = os.getenv("WORKER_TYPE", "transcodecpu")
 LOW_THRESHOLD = int(os.getenv("LOW_THRESHOLD", "12"))  # <= 12 => increase
@@ -65,7 +66,7 @@ def post_process_change(process: str) -> None:
     }
 
     try:
-        response = requests.post(API_URL, json=payload, timeout=10)
+        response = requests.post(ALTER_WORKER_LIMIT_URL, json=payload, timeout=10)
         response.raise_for_status()
         logger.info(f"Successfully posted '{process}' request. Status: {response.status_code}")
     except requests.exceptions.RequestException as e:
