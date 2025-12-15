@@ -1,5 +1,17 @@
 # Changelog
 
+## [v1.0.1](https://github.com/chrisjohnson00/tdarr-load-monitor/tree/v1.0.1) (2025-12-15)
+
+[Full Changelog](https://github.com/chrisjohnson00/tdarr-load-monitor/compare/v1.0.0...v1.0.1)
+
+**Merged pull requests:**
+
+- fix: post to the right url [\#2](https://github.com/chrisjohnson00/tdarr-load-monitor/pull/2) ([chrisjohnson00](https://github.com/chrisjohnson00))
+
+## [v1.0.0](https://github.com/chrisjohnson00/tdarr-load-monitor/tree/v1.0.0) (2025-12-15)
+
+[Full Changelog](https://github.com/chrisjohnson00/tdarr-load-monitor/compare/v0.0.1...v1.0.0)
+
 ## [v0.0.1](https://github.com/chrisjohnson00/tdarr-load-monitor/tree/v0.0.1) (2025-12-15)
 
 [Full Changelog](https://github.com/chrisjohnson00/tdarr-load-monitor/compare/78cd40c877aad42a0dc752232413d8d569ca9f4c...v0.0.1)
