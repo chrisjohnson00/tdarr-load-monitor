@@ -164,7 +164,7 @@ You can add the load monitor webhook to your existing automation flows by sendin
 whenever you want to check the system load and potentially adjust worker limits.
 
 I do this by adding a `webRequest` node in my TDarr server flows that points to the load monitor webhook URL. For my
-flows, this is the final node in the flow.
+flows, I place this node directly after executing ffmpeg.
 
 - `method`: post
 - `Request URL`: `http://load-monitor:5000/webhook`
