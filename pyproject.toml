@@ -1,0 +1,10 @@
+[project]
+name = "pythonproject"
+version = "0.1.0"
+description = "Add your description here"
+requires-python = ">=3.14"
+dependencies = ["requests", "flask"]
+
+[project.optional-dependencies]
+dev = ["flake8", "pytest", "coverage"]
+
