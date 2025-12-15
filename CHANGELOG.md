@@ -1,5 +1,13 @@
 # Changelog
 
+## [v1.0.2](https://github.com/chrisjohnson00/tdarr-load-monitor/tree/v1.0.2) (2025-12-15)
+
+[Full Changelog](https://github.com/chrisjohnson00/tdarr-load-monitor/compare/v1.0.1...v1.0.2)
+
+**Merged pull requests:**
+
+- docs: update readme on usage in flows [\#3](https://github.com/chrisjohnson00/tdarr-load-monitor/pull/3) ([chrisjohnson00](https://github.com/chrisjohnson00))
+
 ## [v1.0.1](https://github.com/chrisjohnson00/tdarr-load-monitor/tree/v1.0.1) (2025-12-15)
 
 [Full Changelog](https://github.com/chrisjohnson00/tdarr-load-monitor/compare/v1.0.0...v1.0.1)
