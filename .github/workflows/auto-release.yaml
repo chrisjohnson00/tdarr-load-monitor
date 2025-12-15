@@ -1,0 +1,56 @@
+name: 'Create Release'
+
+on:
+  push:
+    branches: ['main']
+
+jobs:
+  create_release:
+    runs-on: ubuntu-latest
+    name: 'Create Release'
+    permissions:
+      contents: write
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8  # v6.0.1 2025-12-02
+        with:
+          fetch-depth: 0
+      - name: 'Get Latest Tag'
+        id: 'previoustag'
+        uses: WyriHaximus/github-action-get-previous-tag@04e8485ecb6487243907e330d522ff60f02283ce  # v1.4.0 2024-01-28
+      - name: 'Bump version and push tag'
+        id: 'tag_version'
+        uses: mathieudutour/github-tag-action@a22cf08638b34d5badda920f9daf6e72c477b07b  # v6.2 2024-03-13
+        with:
+          github_token: '${{ secrets.PAT_REPO_ONLY }}'
+          release_branches: 'main'
+          default_bump: 'patch'
+      - name: 'Generate incremental changelog'
+        uses: charmixer/auto-changelog-action@b25e89c9410e03189f0d48b02b3a8caad6e78015  # v1.4 2021-05-01
+        with:
+          token: '${{ secrets.GITHUB_TOKEN }}'
+          release_branch: 'main'
+          since_tag: '${{ steps.previoustag.outputs.tag }}'
+          output: 'release.md'
+      - name: 'Read incremental changelog'
+        id: 'changelog'
+        uses: juliangruber/read-file-action@b549046febe0fe86f8cb4f93c24e284433f9ab58  # v1.1.7 2024-01-26
+        with:
+          path: './release.md'
+      - name: 'Create a GitHub release'
+        uses: actions/create-release@0cb9c9b65d5d1901c1f53e5e66eaf4afd303e70e  # v1.1.4 2020-09-14
+        env:
+          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+        with:
+          tag_name: '${{ steps.tag_version.outputs.new_tag }}'
+          release_name: '${{ steps.tag_version.outputs.new_tag }}'
+          body: '${{ steps.changelog.outputs.content }}'
+      - name: 'Generate changelog'
+        uses: charmixer/auto-changelog-action@b25e89c9410e03189f0d48b02b3a8caad6e78015  # v1.4 2021-05-01
+        with:
+          token: '${{ secrets.GITHUB_TOKEN }}'
+          release_branch: 'main'
+      - uses: stefanzweifel/git-auto-commit-action@28e16e81777b558cc906c8750092100bbb34c5e3  # v7.0.0 2025-10-12
+        with:
+          commit_message: 'chore: Generating CHANGELOG.md for ${{ steps.tag_version.outputs.new_tag }}'
+          file_pattern: 'CHANGELOG.md'
