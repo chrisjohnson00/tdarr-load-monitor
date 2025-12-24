@@ -7,4 +7,3 @@ dependencies = ["requests", "flask"]
 
 [project.optional-dependencies]
 dev = ["flake8", "pytest", "coverage"]
-
