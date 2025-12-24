@@ -1,5 +1,13 @@
 # Changelog
 
+## [v1.1.0](https://github.com/chrisjohnson00/tdarr-load-monitor/tree/v1.1.0) (2025-12-24)
+
+[Full Changelog](https://github.com/chrisjohnson00/tdarr-load-monitor/compare/v1.0.2...v1.1.0)
+
+**Merged pull requests:**
+
+- feat: set worker limit count [\#4](https://github.com/chrisjohnson00/tdarr-load-monitor/pull/4) ([chrisjohnson00](https://github.com/chrisjohnson00))
+
 ## [v1.0.2](https://github.com/chrisjohnson00/tdarr-load-monitor/tree/v1.0.2) (2025-12-15)
 
 [Full Changelog](https://github.com/chrisjohnson00/tdarr-load-monitor/compare/v1.0.1...v1.0.2)
