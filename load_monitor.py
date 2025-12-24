@@ -24,6 +24,7 @@ GET_NODES_URL = f"{API_URL}/api/v2/get-nodes"
 ALTER_WORKER_LIMIT_URL = f"{API_URL}/api/v2/alter-worker-limit"
 TARGET_NODE_NAME = os.getenv("TARGET_NODE_NAME", "r10-ubuntu")
 WORKER_TYPE = os.getenv("WORKER_TYPE", "transcodecpu")
+WORKER_LIMIT = os.getenv("WORKER_LIMIT", "2")
 LOW_THRESHOLD = int(os.getenv("LOW_THRESHOLD", "12"))  # <= 12 => increase
 HIGH_THRESHOLD = int(os.getenv("HIGH_THRESHOLD", "24"))  # >= 24 => decrease
 WEBHOOK_PORT = int(os.getenv("WEBHOOK_PORT", "5000"))
@@ -31,7 +32,7 @@ WEBHOOK_PORT = int(os.getenv("WEBHOOK_PORT", "5000"))
 NODE_ID = None  # Will be set on startup
 
 
-def get_node_id_from_api() -> str:
+def get_node_id_from_api() -> (str, dict):
     """Fetch the node ID for the target node from the API."""
     try:
         response = requests.get(GET_NODES_URL, timeout=10)
@@ -41,7 +42,7 @@ def get_node_id_from_api() -> str:
         for node_id, node_data in nodes.items():
             if node_data.get("nodeName") == TARGET_NODE_NAME:
                 logger.info(f"Found target node '{TARGET_NODE_NAME}' with ID: {node_id}")
-                return node_id
+                return node_id, node_data.get("workerLimits")
 
         logger.error(f"Target node '{TARGET_NODE_NAME}' not found in API response")
         raise ValueError(f"Node '{TARGET_NODE_NAME}' not found")
@@ -76,31 +77,42 @@ def post_process_change(process: str) -> None:
 def check_load_and_post() -> dict:
     """Check system load and post appropriate action. Returns status dict."""
     try:
-        load_1m = get_load_avg_1m()
-        logger.info(f"Current 1m load average: {load_1m:.2f}")
+        _, worker_limits = get_node_id_from_api()
+        worker_limit = worker_limits.get(WORKER_TYPE)
+        logger.info(f"Current worker limit for '{WORKER_TYPE}': {worker_limit}")
+        if int(worker_limit) < int(WORKER_LIMIT):
+            load_1m = get_load_avg_1m()
+            logger.info(f"Current 1m load average: {load_1m:.2f}")
 
-        if load_1m <= LOW_THRESHOLD:
-            logger.info(f"Load ({load_1m:.2f}) <= {LOW_THRESHOLD}, requesting increase")
-            post_process_change("increase")
-            return {
-                "success": True,
-                "load": load_1m,
-                "action": "increase"
-            }
-        elif load_1m >= HIGH_THRESHOLD:
-            logger.info(f"Load ({load_1m:.2f}) >= {HIGH_THRESHOLD}, requesting decrease")
-            post_process_change("decrease")
-            return {
-                "success": True,
-                "load": load_1m,
-                "action": "decrease"
-            }
+            if load_1m <= LOW_THRESHOLD:
+                logger.info(f"Load ({load_1m:.2f}) <= {LOW_THRESHOLD}, requesting increase")
+                post_process_change("increase")
+                return {
+                    "success": True,
+                    "load": load_1m,
+                    "action": "increase"
+                }
+            elif load_1m >= HIGH_THRESHOLD:
+                logger.info(f"Load ({load_1m:.2f}) >= {HIGH_THRESHOLD}, requesting decrease")
+                post_process_change("decrease")
+                return {
+                    "success": True,
+                    "load": load_1m,
+                    "action": "decrease"
+                }
+            else:
+                logger.info(f"Load ({load_1m:.2f}) is between thresholds, no action taken")
+                return {
+                    "success": True,
+                    "load": load_1m,
+                    "action": "none"
+                }
         else:
-            logger.info(f"Load ({load_1m:.2f}) is between thresholds, no action taken")
+            logger.info(f"Worker limit ({worker_limit}) has reached max ({WORKER_LIMIT}), no action taken")
             return {
                 "success": True,
-                "load": load_1m,
-                "action": "none"
+                "load": None,
+                "action": "maxed_out"
             }
     except Exception as e:
         logger.error(f"Error during load check: {e}")
@@ -124,7 +136,7 @@ def main() -> None:
     logger.info("Starting load monitor webhook server...")
 
     try:
-        NODE_ID = get_node_id_from_api()
+        NODE_ID, _ = get_node_id_from_api()
     except Exception as e:
         logger.critical(f"Failed to initialize NODE_ID: {e}")
         return
