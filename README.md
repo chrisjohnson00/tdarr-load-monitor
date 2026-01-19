@@ -1,11 +1,25 @@
 # Load Monitor Webhook
 
-A Python application that monitors system load and posts to an API based on configurable thresholds. The application
-listens for webhook triggers rather than running on a schedule.
+A Python application designed to work as a "sidecar" container alongside Tdarr nodes. It monitors system load and
+dynamically adjusts Tdarr CPU worker limits to prevent system overload or underutilization.
+
+This application listens for webhook triggers (typically from Tdarr flows) and intelligently scales worker counts based
+on configurable CPU load thresholds. It's particularly useful for:
+
+- **Transcoding workloads**: Maximizing CPU worker utilization without overloading your system, or maintaining system
+  responsiveness when running CPU-intensive transcoding tasks
+- **Health check operations**: Scaling health check workers based on server load during large batch operations (e.g.,
+  when onboarding a new library). This is especially valuable when your Tdarr server runs on a NAS or shared
+  resource—the sidecar ensures health check workers scale to saturate the server optimally without overloading it
+
+**Important**: For optimal operation, each Tdarr node should run its own sidecar instance, with each configured
+independently based on that node's hardware and desired load limits.
 
 ## Features
 
 - **Webhook-based triggering**: Listen for POST requests to trigger load checks
+- **Dynamic worker scaling**: Automatically increase or decrease Tdarr CPU workers based on system load
+- **Per-node configuration**: Each sidecar can be independently configured for its specific node
 - **Dynamic node discovery**: Automatically fetches node ID from API on startup
 - **Configurable thresholds**: Adjust CPU load thresholds for increase/decrease actions
 - **Docker deployment**: Pre-configured for containerized deployment (Python 3.14 on Alpine)
@@ -15,14 +29,14 @@ listens for webhook triggers rather than running on a schedule.
 
 The application can be configured using environment variables. All variables have sensible defaults:
 
-| Variable           | Default                     | Description                               |
-|--------------------|-----------------------------|-------------------------------------------|
-| `API_URL`          | `http://192.168.1.131:8265` | The API endpoint to post the payload      |
-| `TARGET_NODE_NAME` | `r10-ubuntu`                | The node name to monitor                  |
-| `WORKER_TYPE`      | `transcodecpu`              | The worker type to adjust                 |
-| `LOW_THRESHOLD`    | `12`                        | CPU load threshold for increasing workers |
-| `HIGH_THRESHOLD`   | `24`                        | CPU load threshold for decreasing workers |
-| `WEBHOOK_PORT`     | `5000`                      | Port for the webhook server               |
+| Variable           | Default                     | Description                                                        |
+|--------------------|-----------------------------|--------------------------------------------------------------------|
+| `API_URL`          | `http://192.168.1.131:8265` | The API endpoint to post the payload                               |
+| `TARGET_NODE_NAME` | `r10-ubuntu`                | The node name to monitor                                           |
+| `WORKER_TYPE`      | `transcodecpu`              | The worker type to adjust (e.g., `transcodecpu`, `healthcheckcpu`) |
+| `LOW_THRESHOLD`    | `12`                        | CPU load threshold for increasing workers                          |
+| `HIGH_THRESHOLD`   | `24`                        | CPU load threshold for decreasing workers                          |
+| `WEBHOOK_PORT`     | `5000`                      | Port for the webhook server                                        |
 
 ### Setting Environment Variables
 
