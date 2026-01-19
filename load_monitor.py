@@ -80,11 +80,11 @@ def check_load_and_post() -> dict:
         _, worker_limits = get_node_id_from_api()
         worker_limit = worker_limits.get(WORKER_TYPE)
         logger.info(f"Current worker limit for '{WORKER_TYPE}': {worker_limit}")
-        if int(worker_limit) < int(WORKER_LIMIT):
-            load_1m = get_load_avg_1m()
-            logger.info(f"Current 1m load average: {load_1m:.2f}")
 
-            if load_1m <= LOW_THRESHOLD:
+        load_1m = get_load_avg_1m()
+        logger.info(f"Current 1m load average: {load_1m:.2f}")
+        if load_1m <= LOW_THRESHOLD:
+            if int(worker_limit) < int(WORKER_LIMIT):
                 logger.info(f"Load ({load_1m:.2f}) <= {LOW_THRESHOLD}, requesting increase")
                 post_process_change("increase")
                 return {
@@ -92,28 +92,28 @@ def check_load_and_post() -> dict:
                     "load": load_1m,
                     "action": "increase"
                 }
-            elif load_1m >= HIGH_THRESHOLD:
-                logger.info(f"Load ({load_1m:.2f}) >= {HIGH_THRESHOLD}, requesting decrease")
-                post_process_change("decrease")
-                return {
-                    "success": True,
-                    "load": load_1m,
-                    "action": "decrease"
-                }
             else:
-                logger.info(f"Load ({load_1m:.2f}) is between thresholds, no action taken")
+                logger.info(f"Worker limit ({worker_limit}) has reached max ({WORKER_LIMIT}), no action taken")
                 return {
                     "success": True,
                     "load": load_1m,
-                    "action": "none"
+                    "action": "maxed_out"
                 }
-        else:
-            logger.info(f"Worker limit ({worker_limit}) has reached max ({WORKER_LIMIT}), no action taken")
+        if load_1m >= HIGH_THRESHOLD:
+            logger.info(f"Load ({load_1m:.2f}) >= {HIGH_THRESHOLD}, requesting decrease")
+            post_process_change("decrease")
             return {
                 "success": True,
-                "load": None,
-                "action": "maxed_out"
+                "load": load_1m,
+                "action": "decrease"
             }
+        # Load is between thresholds
+        logger.info(f"Load ({load_1m:.2f}) is between thresholds, no action taken")
+        return {
+            "success": True,
+            "load": load_1m,
+            "action": "none"
+        }
     except Exception as e:
         logger.error(f"Error during load check: {e}")
         return {
