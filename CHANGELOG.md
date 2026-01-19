@@ -1,5 +1,13 @@
 # Changelog
 
+## [v1.1.1](https://github.com/chrisjohnson00/tdarr-load-monitor/tree/v1.1.1) (2026-01-19)
+
+[Full Changelog](https://github.com/chrisjohnson00/tdarr-load-monitor/compare/v1.1.0...v1.1.1)
+
+**Merged pull requests:**
+
+- fix: once max worker limit was reached it would never scale down [\#5](https://github.com/chrisjohnson00/tdarr-load-monitor/pull/5) ([chrisjohnson00](https://github.com/chrisjohnson00))
+
 ## [v1.1.0](https://github.com/chrisjohnson00/tdarr-load-monitor/tree/v1.1.0) (2025-12-24)
 
 [Full Changelog](https://github.com/chrisjohnson00/tdarr-load-monitor/compare/v1.0.2...v1.1.0)
