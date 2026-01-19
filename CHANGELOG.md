@@ -1,5 +1,13 @@
 # Changelog
 
+## [v1.1.2](https://github.com/chrisjohnson00/tdarr-load-monitor/tree/v1.1.2) (2026-01-19)
+
+[Full Changelog](https://github.com/chrisjohnson00/tdarr-load-monitor/compare/v1.1.1...v1.1.2)
+
+**Merged pull requests:**
+
+- docs: add more why this exists words to the readme [\#6](https://github.com/chrisjohnson00/tdarr-load-monitor/pull/6) ([chrisjohnson00](https://github.com/chrisjohnson00))
+
 ## [v1.1.1](https://github.com/chrisjohnson00/tdarr-load-monitor/tree/v1.1.1) (2026-01-19)
 
 [Full Changelog](https://github.com/chrisjohnson00/tdarr-load-monitor/compare/v1.1.0...v1.1.1)
