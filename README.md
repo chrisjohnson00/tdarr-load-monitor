@@ -74,6 +74,11 @@ Then use `docker compose up -d`
 
 - Python 3.14+
 - [UV](https://docs.astral.sh/uv/) (Python package manager)
+- Update `uv.lock` after dependency changes:
+  ```bash
+  uv lock --upgrade           # refresh lockfile
+  uv sync --locked            # install exactly what is pinned
+  ```
 
 ### Running without Docker
 
